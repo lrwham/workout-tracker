@@ -27,7 +27,7 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
         </h1>
 
         <div className="flex items-center gap-2 mt-2 mb-6">
-          <label htmlFor="workout-date" className="text-sm text-neutral-500">
+          <label htmlFor="workout-date" className="text-base text-neutral-500">
             Date
           </label>
           <input
@@ -35,7 +35,7 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
             type="date"
             value={workout.date}
             onChange={handleDateChange}
-            className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-sm
+            className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-base
                        focus:outline-none focus:ring-2 focus:ring-neutral-400"
           />
         </div>

@@ -28,17 +28,17 @@ export default function SetRow({ setNumber, value, onChange }: SetRowProps) {
         placeholder="lbs"
         value={value.lbs ?? ""}
         onChange={handleLbsChange}
-        className="w-20 rounded-md border border-neutral-300 bg-white px-2 py-1.5 text-sm text-center
+        className="w-20 rounded-md border border-neutral-300 bg-white px-2 py-1.5 text-base text-center
                    placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400"
       />
-      <span className="text-neutral-400 text-sm">×</span>
+      <span className="text-neutral-400 text-base">×</span>
       <input
         type="number"
         inputMode="numeric"
         placeholder="reps"
         value={value.reps ?? ""}
         onChange={handleRepsChange}
-        className="w-20 rounded-md border border-neutral-300 bg-white px-2 py-1.5 text-sm text-center
+        className="w-20 rounded-md border border-neutral-300 bg-white px-2 py-1.5 text-base text-center
                    placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400"
       />
     </div>
