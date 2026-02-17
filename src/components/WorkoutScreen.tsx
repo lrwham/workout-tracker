@@ -49,6 +49,28 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
             />
           ))}
         </div>
+
+        <div>
+          <button
+            className="mt-6 w-full rounded-md bg-blue-600 text-white py-2 text-lg font-semibold
+             hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onClick={() => {
+              const submission = {
+                date: workout.date,
+                exercises: workout.exercises.map(ex => ({
+                  name: ex.name,
+                  sets: ex.sets.map(set => ({
+                    lbs: set.lbs,
+                    reps: set.reps,
+                  })),
+                })),
+              };
+              console.log(JSON.stringify(submission, null, 2));
+            }}
+          >
+            Save Workout
+          </button>
+        </div>
       </div>
     </div>
   );
