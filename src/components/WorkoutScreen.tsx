@@ -20,6 +20,13 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
   };
 
   const handleRandomFill = () => {
+    // Random integer from -2 to 2
+    const dayOffset = Math.floor(Math.random() * 5) - 2;
+    const randomDate = new Date();
+    randomDate.setDate(randomDate.getDate() + dayOffset);
+    // toISOString() gives "2026-02-18T..." — grab just the date part
+    const dateString = randomDate.toISOString().slice(0, 10);
+
     const randomized = workout.exercises.map((exercise) => ({
       ...exercise,
       sets: exercise.sets.map((set) => ({
@@ -28,7 +35,7 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
         reps: Math.floor(Math.random() * (15 - 6 + 1)) + 6,
       })),
     }));
-    setWorkout({ ...workout, exercises: randomized });
+    setWorkout({ ...workout, date: dateString, exercises: randomized });
   };
 
   function sortKeysDeep(obj: unknown): unknown {
