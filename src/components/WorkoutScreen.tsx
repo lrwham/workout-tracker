@@ -2,6 +2,19 @@ import { useState } from "react";
 import type { WorkoutDay, Exercise } from "../types";
 import ExerciseCard from "./ExerciseCard";
 
+function sortKeysDeep(obj: unknown): unknown {
+  if (Array.isArray(obj)) return obj.map(sortKeysDeep);
+  if (obj !== null && typeof obj === "object") {
+    return Object.keys(obj as Record<string, unknown>)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = sortKeysDeep((obj as Record<string, unknown>)[key]);
+        return acc;
+      }, {} as Record<string, unknown>);
+  }
+  return obj;
+}
+
 type WorkoutScreenProps = {
   initialWorkout: WorkoutDay;
 };
@@ -38,18 +51,51 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
     setWorkout({ ...workout, date: dateString, exercises: randomized });
   };
 
-  function sortKeysDeep(obj: unknown): unknown {
-    if (Array.isArray(obj)) return obj.map(sortKeysDeep);
-    if (obj !== null && typeof obj === "object") {
-      return Object.keys(obj as Record<string, unknown>)
-        .sort()
-        .reduce((acc, key) => {
-          acc[key] = sortKeysDeep((obj as Record<string, unknown>)[key]);
-          return acc;
-        }, {} as Record<string, unknown>);
+  const handleSave = async () => {
+    const submission = {
+      date: workout.date,
+      exercises: workout.exercises.map((ex) => ({
+        name: ex.name,
+        sets: ex.sets.map((set) => ({
+          lbs: set.lbs,
+          reps: set.reps,
+        })),
+      })),
+    };
+
+    const jsonString = JSON.stringify(sortKeysDeep(submission));
+
+    try {
+      const res = await fetch("http://localhost:8000/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": "dev-workout-key-123",
+        },
+        body: JSON.stringify(submission),
+      });
+
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+
+      const { hash } = await res.json();
+
+      // Verify the hash client-side
+      const encoder = new TextEncoder();
+      const data = encoder.encode(jsonString);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const localHash = Array.from(new Uint8Array(hashBuffer))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+      if (hash === localHash) {
+        console.log("Verified! Hash:", hash);
+      } else {
+        console.warn("Hash mismatch!", { server: hash, local: localHash });
+      }
+    } catch (err) {
+      console.error("Submit failed:", err);
     }
-    return obj;
-  }
+  };
 
   return (
     <div className="min-h-screen bg-neutral-100 font-sans">
@@ -86,51 +132,7 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
           <button
             className="mt-6 w-full rounded-md bg-blue-600 text-white py-2 text-lg font-semibold
              hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            onClick={async () => {
-              const submission = {
-                date: workout.date,
-                exercises: workout.exercises.map(ex => ({
-                  name: ex.name,
-                  sets: ex.sets.map(set => ({
-                    lbs: set.lbs,
-                    reps: set.reps,
-                  })),
-                })),
-              };
-
-              const jsonString = JSON.stringify(sortKeysDeep(submission));
-
-              try {
-                const res = await fetch("http://localhost:8000/submit", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "X-API-Key": "dev-workout-key-123",
-                  },
-                  body: JSON.stringify(submission),
-                });
-
-                if (!res.ok) throw new Error(`Server error: ${res.status}`);
-
-                const { hash } = await res.json();
-
-                // Verify the hash client-side
-                const encoder = new TextEncoder();
-                const data = encoder.encode(jsonString);
-                const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-                const localHash = Array.from(new Uint8Array(hashBuffer))
-                  .map(b => b.toString(16).padStart(2, "0"))
-                  .join("");
-
-                if (hash === localHash) {
-                  console.log("Verified! Hash:", hash);
-                } else {
-                  console.warn("Hash mismatch!", { server: hash, local: localHash });
-                }
-              } catch (err) {
-                console.error("Submit failed:", err);
-              }
-            }}
+            onClick={handleSave}
           >
             Save Workout
           </button>
