@@ -8,7 +8,7 @@ import WorkoutScreen from "./components/WorkoutScreen";
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
+  const [_email, setEmail] = useState<string | null>(null);
 
   const handleLogin = (newToken: string, userEmail: string) => {
     setToken(newToken);
