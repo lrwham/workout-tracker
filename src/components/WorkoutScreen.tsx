@@ -66,11 +66,11 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
     const jsonString = JSON.stringify(sortKeysDeep(submission));
 
     try {
-      const res = await fetch("http://localhost:8000/submit", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-API-Key": "dev-workout-key-123",
+          "X-API-Key": import.meta.env.VITE_API_KEY,
         },
         body: JSON.stringify(submission),
       });
