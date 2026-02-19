@@ -17,9 +17,11 @@ function sortKeysDeep(obj: unknown): unknown {
 
 type WorkoutScreenProps = {
   initialWorkout: WorkoutDay;
+  token: string;
+  onLogout: () => void;
 };
 
-export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
+export default function WorkoutScreen({ initialWorkout, token, onLogout }: WorkoutScreenProps) {
   const [workout, setWorkout] = useState<WorkoutDay>(initialWorkout);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +72,7 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-API-Key": import.meta.env.VITE_API_KEY,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(submission),
       });
@@ -100,9 +102,17 @@ export default function WorkoutScreen({ initialWorkout }: WorkoutScreenProps) {
   return (
     <div className="min-h-screen bg-neutral-100 font-sans">
       <div className="max-w-md mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-neutral-900">
-          {workout.label} — {workout.focus}
-        </h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-neutral-900">
+            {workout.label} — {workout.focus}
+          </h1>
+          <button
+            onClick={onLogout}
+            className="text-sm text-neutral-500 hover:text-neutral-700"
+          >
+            Log out
+          </button>
+        </div>
 
         <div className="flex items-center gap-2 mt-2 mb-6">
           <label htmlFor="workout-date" className="text-base text-neutral-500">
