@@ -1,5 +1,6 @@
-import { useState } from "react";
-import type { WorkoutDay, Exercise } from "../types";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import type { WorkoutDay, WorkoutTemplate, Exercise } from "../types";
 import ExerciseCard from "./ExerciseCard";
 
 function sortKeysDeep(obj: unknown): unknown {
@@ -15,32 +16,83 @@ function sortKeysDeep(obj: unknown): unknown {
   return obj;
 }
 
+function templateToWorkoutDay(template: WorkoutTemplate): WorkoutDay {
+  return {
+    id: `workout-${template.id}`,
+    label: template.label,
+    focus: template.focus,
+    date: "",
+    exercises: template.exercises
+      .sort((a, b) => a.position - b.position)
+      .map((ex, i) => ({
+        id: `exercise-${i}`,
+        name: ex.name,
+        targetWeight: ex.targetWeight,
+        sets: Array.from({ length: ex.numSets }, () => ({ lbs: null, reps: null })),
+      })),
+  };
+}
+
 type WorkoutScreenProps = {
-  initialWorkout: WorkoutDay;
   token: string;
-  email: string | null;
-  onLogout: () => void;
 };
 
-export default function WorkoutScreen({ initialWorkout, token, email, onLogout }: WorkoutScreenProps) {
-  const [workout, setWorkout] = useState<WorkoutDay>(initialWorkout);
+export default function WorkoutScreen({ token }: WorkoutScreenProps) {
+  const { templateId } = useParams();
+  const navigate = useNavigate();
+  const [workout, setWorkout] = useState<WorkoutDay | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTemplate = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/templates/${templateId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!res.ok) throw new Error("Failed to load template");
+
+        const data = await res.json();
+        const template: WorkoutTemplate = {
+          id: data.id,
+          label: data.label,
+          focus: data.focus,
+          exercises: data.exercises.map((ex: any) => ({
+            id: ex.id,
+            name: ex.name,
+            targetWeight: ex.target_weight,
+            numSets: ex.num_sets,
+            position: ex.position,
+          })),
+        };
+        setWorkout(templateToWorkoutDay(template));
+      } catch {
+        setError("Couldn't load workout template.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTemplate();
+  }, [templateId, token]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWorkout({ ...workout, date: e.target.value });
+    setWorkout(workout ? { ...workout, date: e.target.value } : null);
   };
 
   const handleExerciseChange = (index: number, updated: Exercise) => {
+    if (!workout) return;
     const newExercises = [...workout.exercises];
     newExercises[index] = updated;
     setWorkout({ ...workout, exercises: newExercises });
   };
 
   const handleRandomFill = () => {
-    // Random integer from -2 to 2
+    if (!workout) return;
     const dayOffset = Math.floor(Math.random() * 5) - 2;
     const randomDate = new Date();
     randomDate.setDate(randomDate.getDate() + dayOffset);
-    // toISOString() gives "2026-02-18T..." — grab just the date part
     const dateString = randomDate.toISOString().slice(0, 10);
 
     const randomized = workout.exercises.map((exercise) => ({
@@ -55,6 +107,7 @@ export default function WorkoutScreen({ initialWorkout, token, email, onLogout }
   };
 
   const handleSave = async () => {
+    if (!workout) return;
     const submission = {
       date: workout.date,
       exercises: workout.exercises.map((ex) => ({
@@ -82,10 +135,8 @@ export default function WorkoutScreen({ initialWorkout, token, email, onLogout }
 
       const { hash } = await res.json();
 
-      // Verify the hash client-side
       const encoder = new TextEncoder();
-      const data = encoder.encode(jsonString);
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(jsonString));
       const localHash = Array.from(new Uint8Array(hashBuffer))
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
@@ -95,26 +146,51 @@ export default function WorkoutScreen({ initialWorkout, token, email, onLogout }
       } else {
         console.warn("Hash mismatch!", { server: hash, local: localHash });
       }
+
+      navigate("/");
     } catch (err) {
       console.error("Submit failed:", err);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-neutral-100 font-sans">
+        <div className="max-w-md mx-auto px-4 py-6">
+          <p className="text-sm text-neutral-400">Loading workout...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !workout) {
+    return (
+      <div className="min-h-screen bg-neutral-100 font-sans">
+        <div className="max-w-md mx-auto px-4 py-6">
+          <p className="text-sm text-red-600">{error ?? "Something went wrong."}</p>
+          <button
+            onClick={() => navigate("/")}
+            className="mt-4 text-sm text-blue-600 hover:text-blue-800"
+          >
+            Back to home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-neutral-100 font-sans">
       <div className="max-w-md mx-auto px-4 py-6">
-        <div className="flex items-center gap-2 mb-4">
-          Welcome - {email}
-        </div>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-neutral-900">
             {workout.label} — {workout.focus}
           </h1>
           <button
-            onClick={onLogout}
+            onClick={() => navigate("/")}
             className="text-sm text-neutral-500 hover:text-neutral-700"
           >
-            Log out
+            Cancel
           </button>
         </div>
 
@@ -145,7 +221,7 @@ export default function WorkoutScreen({ initialWorkout, token, email, onLogout }
         <div>
           <button
             className="mt-6 w-full rounded-md bg-blue-600 text-white py-2 text-lg font-semibold
-             hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
             onClick={handleSave}
           >
             Save Workout
@@ -155,7 +231,7 @@ export default function WorkoutScreen({ initialWorkout, token, email, onLogout }
           <div>
             <button
               className="mt-2 w-full rounded-md bg-neutral-300 text-neutral-800 py-2 text-lg font-semibold
-             hover:bg-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+                         hover:bg-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400"
               onClick={handleRandomFill}
             >
               Random Fill
