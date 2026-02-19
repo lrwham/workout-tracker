@@ -1,7 +1,7 @@
 import { useState } from "react";
 import LoginScreen from "./components/LoginScreen";
 import WorkoutScreen from "./components/WorkoutScreen";
-import { sampleWorkout } from "./data";
+import { sampleWorkoutA, sampleWorkoutB } from "./data";
 
 function App() {
   const [token, setToken] = useState<string | null>(null);
@@ -23,8 +23,9 @@ function App() {
 
   return (
     <WorkoutScreen
-      initialWorkout={sampleWorkout}
+      initialWorkout={sampleWorkoutA}
       token={token}
+      email={email}
       onLogout={handleLogout}
     />
   );

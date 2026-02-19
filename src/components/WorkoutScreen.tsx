@@ -18,10 +18,11 @@ function sortKeysDeep(obj: unknown): unknown {
 type WorkoutScreenProps = {
   initialWorkout: WorkoutDay;
   token: string;
+  email: string | null;
   onLogout: () => void;
 };
 
-export default function WorkoutScreen({ initialWorkout, token, onLogout }: WorkoutScreenProps) {
+export default function WorkoutScreen({ initialWorkout, token, email, onLogout }: WorkoutScreenProps) {
   const [workout, setWorkout] = useState<WorkoutDay>(initialWorkout);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +103,9 @@ export default function WorkoutScreen({ initialWorkout, token, onLogout }: Worko
   return (
     <div className="min-h-screen bg-neutral-100 font-sans">
       <div className="max-w-md mx-auto px-4 py-6">
+        <div className="flex items-center gap-2 mb-4">
+          Welcome - {email}
+        </div>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-neutral-900">
             {workout.label} — {workout.focus}

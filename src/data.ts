@@ -3,7 +3,7 @@ import type { WorkoutDay } from "./types";
 const emptySet = () => ({ lbs: null, reps: null });
 const emptySets = (count: number) => Array.from({ length: count }, emptySet);
 
-export const sampleWorkout: WorkoutDay = {
+export const sampleWorkoutB: WorkoutDay = {
   id: "day-b",
   label: "Day B",
   focus: "Lower Body",
@@ -30,6 +30,40 @@ export const sampleWorkout: WorkoutDay = {
     {
       id: "leg-curl",
       name: "Leg Curls",
+      targetWeight: 80,
+      sets: emptySets(3),
+    },
+  ],
+};
+
+
+export const sampleWorkoutA: WorkoutDay = {
+  id: "day-a",
+  label: "Day A",
+  focus: "Upper Body",
+  date: "",
+  exercises: [
+    {
+      id: "bench-press",
+      name: "Bench Press",
+      targetWeight: 165,
+      sets: emptySets(3),
+    },
+    {
+      id: "overhead-press",
+      name: "Overhead Press",
+      targetWeight: 95,
+      sets: emptySets(3),
+    },
+    {
+      id: "cable-row",
+      name: "Cable Row",
+      targetWeight: 160,
+      sets: emptySets(3),
+    },
+    {
+      id: "assisted-pullup",
+      name: "Assisted Pull Ups",
       targetWeight: 80,
       sets: emptySets(3),
     },
