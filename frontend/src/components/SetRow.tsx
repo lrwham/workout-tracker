@@ -54,8 +54,8 @@ export default function SetRow({
           aria-label={`Remove set ${setNumber}`}
           onClick={onRemove}
           disabled={disableRemove}
-        className="bg-neutral-200 text-neutral-500 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-blue-400 active:ring-blue-600 w-8 rounded-md ml-4"
-      > - </button>
+        className="disabled:hover:bg-neutral-200 disabled:hover:text-neutral-500 disabled:opacity-30 disabled:cursor-not-allowed bg-neutral-200 text-neutral-500 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-blue-400 active:ring-blue-600 w-8 rounded-md ml-auto"
+      > &minus; </button>
       )}
     </div>
   );
