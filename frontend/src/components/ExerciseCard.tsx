@@ -27,7 +27,7 @@ export default function ExerciseCard({ exercise, onExerciseChange }: ExerciseCar
 
   return (
     <div className="flex rounded-2xl bg-white border border-neutral-200 overflow-hidden">
-      <div className="flex flex-col items-center justify-between bg-neutral-100 px-2 py-3 min-w-[48px]">
+      <div className="flex flex-col items-center justify-between bg-neutral-100 px-2 py-3 min-w-12">
         <span
           className="text-lg font-semibold text-neutral-700 whitespace-nowrap"
           style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}

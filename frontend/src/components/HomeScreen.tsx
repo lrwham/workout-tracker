@@ -49,11 +49,19 @@ export default function HomeScreen({ token, onLogout, theme, onToggleTheme }: Ho
   }, [token]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans flex items-center justify-center">
+        <p className="text-neutral-500 dark:text-neutral-400">Loading...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans flex items-center justify-center">
+        <p className="text-red-600 dark:text-red-400">{error}</p>
+      </div>
+    );
   }
 
   return (
