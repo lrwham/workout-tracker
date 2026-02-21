@@ -32,3 +32,5 @@ export type WorkoutTemplate = {
   focus: string;
   exercises: TemplateExercise[];
 };
+
+export type Theme = "light" | "dark";

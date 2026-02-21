@@ -5,8 +5,10 @@ import LoginScreen from "./components/LoginScreen";
 import HomeScreen from "./components/HomeScreen";
 import TemplateCreator from "./components/TemplateCreator";
 import WorkoutScreen from "./components/WorkoutScreen";
+import { useTheme } from "./hooks/useTheme";
 
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const [token, setToken] = useState<string | null>(null);
   const [_email, setEmail] = useState<string | null>(null);
 
@@ -21,7 +23,7 @@ function App() {
   };
 
   if (!token) {
-    return <LoginScreen onLogin={handleLogin} />;
+    return <LoginScreen onLogin={handleLogin} theme={theme} onToggleTheme={toggleTheme} />;
   }
 
   return (
@@ -29,12 +31,18 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<HomeScreen token={token} onLogout={handleLogout} />}
+          element={
+            <HomeScreen
+              token={token}
+              onLogout={handleLogout}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+            />
+          }
         />
-        {/* We'll add these next: */}
         <Route
           path="/templates/new"
-          element={<TemplateCreator token={token} />}
+          element={<TemplateCreator token={token} theme={theme} onToggleTheme={toggleTheme} />}
         />
         <Route
           path="/workout/:templateId"

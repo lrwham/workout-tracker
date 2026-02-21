@@ -1,16 +1,20 @@
 import { useState } from "react";
+import ThemeToggle from "./ThemeToggle";
+import type { Theme } from "../types";
 
 type LoginScreenProps = {
   onLogin: (token: string, email: string) => void;
+  theme: Theme;
+  onToggleTheme: () => void;
 };
 
-export default function LoginScreen({ onLogin }: LoginScreenProps) {
+export default function LoginScreen({ onLogin, theme, onToggleTheme }: LoginScreenProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin: React.SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
@@ -39,15 +43,17 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-100 font-sans flex items-center justify-center">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans flex items-center justify-center">
       <div className="max-w-md w-full mx-auto px-4">
-        <h1 className="text-2xl font-bold text-neutral-900 mb-6">
-          Workout Tracker
-        </h1>
-
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+            Workout Tracker
+          </h1>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        </div>
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="text-base text-neutral-500">
+            <label htmlFor="email" className="text-base text-neutral-500 dark:text-neutral-400">
               Email
             </label>
             <input
@@ -59,13 +65,13 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
                 setError(null);
               }}
               required
-              className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-base
+              className="rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-2 py-1 text-base
                          focus:outline-none focus:ring-2 focus:ring-neutral-400"
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="text-base text-neutral-500">
+            <label htmlFor="password" className="text-base text-neutral-500 dark:text-neutral-400">
               Password
             </label>
             <input
@@ -77,7 +83,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
                 setError(null);
               }}
               required
-              className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-base
+              className="rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 px-2 py-1 text-base
                          focus:outline-none focus:ring-2 focus:ring-neutral-400"
             />
           </div>
@@ -89,8 +95,8 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="rounded-md bg-blue-600 text-white py-2 text-lg font-semibold
-                       hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400
+            className="rounded-md bg-blue-600 text-white dark:text-neutral-100 py-2 text-lg font-semibold
+                       hover:bg-blue-700 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400
                        disabled:bg-blue-400 disabled:cursor-not-allowed"
           >
             {isLoading ? "Logging in..." : "Log In"}

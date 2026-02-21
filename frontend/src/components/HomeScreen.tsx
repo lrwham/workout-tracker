@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type { WorkoutTemplate } from "../types";
+import type { Theme, WorkoutTemplate } from "../types";
+import ThemeToggle from "./ThemeToggle";
 
 type HomeScreenProps = {
   token: string;
   onLogout: () => void;
+  theme: Theme;
+  onToggleTheme: () => void;
 };
 
-export default function HomeScreen({ token, onLogout }: HomeScreenProps) {
+export default function HomeScreen({ token, onLogout, theme, onToggleTheme }: HomeScreenProps) {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<WorkoutTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,13 +57,15 @@ export default function HomeScreen({ token, onLogout }: HomeScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 font-sans">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans">
+
       <div className="max-w-md mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-neutral-900">My Workouts</h1>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">My Workouts</h1>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           <button
             onClick={onLogout}
-            className="text-sm text-neutral-500 hover:text-neutral-700"
+            className="text-sm text-neutral-500 dark:text-neutral-500 hover:text-neutral-700"
           >
             Log out
           </button>
@@ -70,15 +75,15 @@ export default function HomeScreen({ token, onLogout }: HomeScreenProps) {
           {templates.map((template) => (
             <div
               key={template.id}
-              className="rounded-lg border border-neutral-200 bg-white p-4"
+              className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-neutral-900">
+                  <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                     {template.label}
                   </h2>
-                  <p className="text-sm text-neutral-500">{template.focus}</p>
-                  <p className="text-sm text-neutral-400 mt-1">
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{template.focus}</p>
+                  <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-1">
                     {template.exercises.length} exercises
                   </p>
                 </div>
@@ -96,8 +101,8 @@ export default function HomeScreen({ token, onLogout }: HomeScreenProps) {
 
         <button
           onClick={() => navigate("/templates/new")}
-          className="mt-6 w-full rounded-md border-2 border-dashed border-neutral-300
-                     text-neutral-500 py-3 text-base font-medium
+          className="mt-6 w-full rounded-md border-2 border-dashed border-neutral-300 dark:border-neutral-600
+                     text-neutral-500 dark:text-neutral-400 py-3 text-base font-medium
                      hover:border-neutral-400 hover:text-neutral-700
                      focus:outline-none focus:ring-2 focus:ring-neutral-400"
         >
