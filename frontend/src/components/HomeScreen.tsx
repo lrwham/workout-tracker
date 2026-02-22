@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Theme, WorkoutTemplate } from "../types";
-import ThemeToggle from "./ThemeToggle";
+import TopBar from "./TopBar";
 
 type HomeScreenProps = {
   token: string;
+  email: string;
   onLogout: () => void;
   theme: Theme;
   onToggleTheme: () => void;
 };
 
-export default function HomeScreen({ token, onLogout, theme, onToggleTheme }: HomeScreenProps) {
+export default function HomeScreen({
+  token,
+  email,
+  onLogout,
+  theme,
+  onToggleTheme,
+}: HomeScreenProps) {
   const navigate = useNavigate();
   const [templates, setTemplates] = useState<WorkoutTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,37 +56,25 @@ export default function HomeScreen({ token, onLogout, theme, onToggleTheme }: Ho
   }, [token]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans flex items-center justify-center">
-        <p className="text-neutral-500 dark:text-neutral-400">Loading...</p>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans flex items-center justify-center">
-        <p className="text-red-600 dark:text-red-400">{error}</p>
-      </div>
-    );
+    return <div>{error}</div>;
   }
 
   return (
     <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans">
-
       <div className="max-w-md mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">My Workouts</h1>
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <button
-            onClick={onLogout}
-            className="text-sm text-neutral-500 dark:text-neutral-500 hover:text-neutral-700"
-          >
-            Log out
-          </button>
-        </div>
+        <TopBar
+          pageTitle="My Workouts"
+          email={email}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+          onLogout={onLogout}
+        />
 
-        <div className="flex flex-col gap-3 mt-6">
+        <div className="flex flex-col gap-3">
           {templates.map((template) => (
             <div
               key={template.id}

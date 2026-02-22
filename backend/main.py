@@ -1,6 +1,7 @@
 import hashlib
 import json
 
+import bcrypt
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -11,13 +12,15 @@ from models import (
     Exercise,
     Workout,
     WorkoutSet,
-    WorkoutSubmission,
     User,
-    TemplateCreate,
-    TemplateExerciseCreate,
     TemplateExercise,
-    TemplateResponse,
     WorkoutTemplate,
+)
+from schemas import (
+    ChangePasswordRequest,
+    TemplateCreate,
+    TemplateResponse,
+    WorkoutSubmission,
 )
 from database import Base, engine, SessionLocal
 
@@ -26,7 +29,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
-    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
 )
 
@@ -151,3 +154,20 @@ async def delete_template(
     db.delete(template)
     db.commit()
     return {"detail": "Template deleted successfully"}
+
+
+@app.put("/account/password")
+async def change_password(
+    payload: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    if not verify_password(payload.old_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+
+    current_user.hashed_password = bcrypt.hashpw(
+        payload.new_password.encode(), bcrypt.gensalt()
+    ).decode()
+    db.commit()
+
+    return {"detail": "Password updated successfully"}

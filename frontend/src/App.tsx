@@ -5,12 +5,13 @@ import LoginScreen from "./components/LoginScreen";
 import HomeScreen from "./components/HomeScreen";
 import TemplateCreator from "./components/TemplateCreator";
 import WorkoutScreen from "./components/WorkoutScreen";
+import AccountScreen from "./components/AccountScreen";
 import { useTheme } from "./hooks/useTheme";
 
 function App() {
   const { theme, toggleTheme } = useTheme();
   const [token, setToken] = useState<string | null>(null);
-  const [_email, setEmail] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
 
   const handleLogin = (newToken: string, userEmail: string) => {
     setToken(newToken);
@@ -22,7 +23,7 @@ function App() {
     setEmail(null);
   };
 
-  if (!token) {
+  if (!token || !email) {
     return <LoginScreen onLogin={handleLogin} theme={theme} onToggleTheme={toggleTheme} />;
   }
 
@@ -34,6 +35,7 @@ function App() {
           element={
             <HomeScreen
               token={token}
+              email={email}
               onLogout={handleLogout}
               theme={theme}
               onToggleTheme={toggleTheme}
@@ -42,12 +44,41 @@ function App() {
         />
         <Route
           path="/templates/new"
-          element={<TemplateCreator token={token} theme={theme} onToggleTheme={toggleTheme} />}
+          element={
+            <TemplateCreator
+              token={token}
+              email={email}
+              onLogout={handleLogout}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+            />
+          }
         />
         <Route
           path="/workout/:templateId"
-          element={<WorkoutScreen token={token} />}
-        />        <Route path="*" element={<Navigate to="/" replace />} />
+          element={
+            <WorkoutScreen
+              token={token}
+              email={email}
+              onLogout={handleLogout}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+            />
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <AccountScreen
+              token={token}
+              email={email}
+              onLogout={handleLogout}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

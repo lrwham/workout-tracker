@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Theme } from "../types";
-import ThemeToggle from "./ThemeToggle";
+import TopBar from "./TopBar";
 
+type TemplateCreatorProps = {
+  token: string;
+  email: string;
+  onLogout: () => void;
+  theme: Theme;
+  onToggleTheme: () => void;
+};
 
 type ExerciseRow = {
   name: string;
@@ -16,7 +23,13 @@ const emptyExercise = (): ExerciseRow => ({
   numSets: "3",
 });
 
-export default function TemplateCreator({ token, theme, onToggleTheme }: { token: string; theme: Theme; onToggleTheme: () => void }) {
+export default function TemplateCreator({
+  token,
+  email,
+  onLogout,
+  theme,
+  onToggleTheme,
+}: TemplateCreatorProps) {
   const navigate = useNavigate();
   const [label, setLabel] = useState("");
   const [focus, setFocus] = useState("");
@@ -80,18 +93,23 @@ export default function TemplateCreator({ token, theme, onToggleTheme }: { token
   return (
     <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans">
       <div className="max-w-md mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">New Template</h1>
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <button
-            onClick={() => navigate("/")}
-            className="text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
-          >
-            Cancel
-          </button>
-        </div>
+        <TopBar
+          pageTitle="New Template"
+          email={email}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+          onLogout={onLogout}
+          actionButton={
+            <button
+              onClick={() => navigate("/")}
+              className="text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+            >
+              Cancel
+            </button>
+          }
+        />
 
-        <div className="flex flex-col gap-4 mt-6">
+        <div className="flex flex-col gap-4">
           <div className="flex gap-3">
             <div className="flex flex-col gap-1 flex-1">
               <label htmlFor="label" className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -124,54 +142,49 @@ export default function TemplateCreator({ token, theme, onToggleTheme }: { token
           </div>
 
           <div className="flex flex-col gap-3">
-            <h2 className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Exercises</h2>
-
             {exercises.map((exercise, i) => (
               <div
                 key={i}
-                className="rounded-lg border border-neutral-200 bg-white dark:bg-neutral-800 p-3 flex flex-col gap-2"
+                className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-3"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-neutral-400 dark:text-neutral-500">Exercise {i + 1}</span>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    Exercise {i + 1}
+                  </span>
                   {exercises.length > 1 && (
                     <button
                       onClick={() => removeExercise(i)}
-                      className="text-xs text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-700"
+                      className="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                     >
                       Remove
                     </button>
                   )}
                 </div>
-                <input
-                  type="text"
-                  placeholder="Exercise name"
-                  value={exercise.name}
-                  onChange={(e) => updateExercise(i, "name", e.target.value)}
-                  className="rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 px-2 py-1 text-base
-                             focus:outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100"
-                />
-                <div className="flex gap-3">
-                  <div className="flex flex-col gap-1 flex-1">
-                    <label className="text-xs text-neutral-400 dark:text-neutral-500">Target lbs</label>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="text"
+                    placeholder="Exercise name"
+                    value={exercise.name}
+                    onChange={(e) => updateExercise(i, "name", e.target.value)}
+                    className="rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 px-2 py-1 text-base
+                               focus:outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100"
+                  />
+                  <div className="flex gap-2">
                     <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="135"
+                      type="number"
+                      placeholder="Weight (lbs)"
                       value={exercise.targetWeight}
                       onChange={(e) => updateExercise(i, "targetWeight", e.target.value)}
-                      className="rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 px-2 py-1 text-base
+                      className="flex-1 rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 px-2 py-1 text-base
                                  focus:outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100"
                     />
-                  </div>
-                  <div className="flex flex-col gap-1 flex-1">
-                    <label className="text-xs text-neutral-400 dark:text-neutral-500">Sets</label>
                     <input
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="3"
+                      type="number"
+                      placeholder="Sets"
+                      min="1"
                       value={exercise.numSets}
                       onChange={(e) => updateExercise(i, "numSets", e.target.value)}
-                      className="rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 px-2 py-1 text-base
+                      className="w-20 rounded-md border border-neutral-300 bg-white dark:bg-neutral-800 px-2 py-1 text-base
                                  focus:outline-none focus:ring-2 focus:ring-neutral-400 text-neutral-900 dark:text-neutral-100"
                     />
                   </div>

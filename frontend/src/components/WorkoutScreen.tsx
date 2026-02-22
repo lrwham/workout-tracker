@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { WorkoutDay, WorkoutTemplate, Exercise } from "../types";
+import type { WorkoutDay, WorkoutTemplate, Exercise, Theme } from "../types";
 import ExerciseCard from "./ExerciseCard";
+import TopBar from "./TopBar";
 
 function sortKeysDeep(obj: unknown): unknown {
   if (Array.isArray(obj)) return obj.map(sortKeysDeep);
@@ -35,9 +36,19 @@ function templateToWorkoutDay(template: WorkoutTemplate): WorkoutDay {
 
 type WorkoutScreenProps = {
   token: string;
+  email: string;
+  onLogout: () => void;
+  theme: Theme;
+  onToggleTheme: () => void;
 };
 
-export default function WorkoutScreen({ token }: WorkoutScreenProps) {
+export default function WorkoutScreen({
+  token,
+  email,
+  onLogout,
+  theme,
+  onToggleTheme,
+}: WorkoutScreenProps) {
   const { templateId } = useParams();
   const navigate = useNavigate();
   const [workout, setWorkout] = useState<WorkoutDay | null>(null);
@@ -153,11 +164,13 @@ export default function WorkoutScreen({ token }: WorkoutScreenProps) {
     }
   };
 
+  const pageTitle = workout ? `${workout.label} — ${workout.focus}` : "Workout";
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-100 font-sans">
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans">
         <div className="max-w-md mx-auto px-4 py-6">
-          <p className="text-sm text-neutral-400">Loading workout...</p>
+          <p className="text-sm text-neutral-400 dark:text-neutral-500">Loading workout...</p>
         </div>
       </div>
     );
@@ -165,12 +178,12 @@ export default function WorkoutScreen({ token }: WorkoutScreenProps) {
 
   if (error || !workout) {
     return (
-      <div className="min-h-screen bg-neutral-100 font-sans">
+      <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans">
         <div className="max-w-md mx-auto px-4 py-6">
-          <p className="text-sm text-red-600">{error ?? "Something went wrong."}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{error ?? "Something went wrong."}</p>
           <button
             onClick={() => navigate("/")}
-            className="mt-4 text-sm text-blue-600 hover:text-blue-800"
+            className="mt-4 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
             Back to home
           </button>
@@ -180,22 +193,26 @@ export default function WorkoutScreen({ token }: WorkoutScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 font-sans">
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans">
       <div className="max-w-md mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-neutral-900">
-            {workout.label} — {workout.focus}
-          </h1>
-          <button
-            onClick={() => navigate("/")}
-            className="text-sm text-neutral-500 hover:text-neutral-700"
-          >
-            Cancel
-          </button>
-        </div>
+        <TopBar
+          pageTitle={pageTitle}
+          email={email}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+          onLogout={onLogout}
+          actionButton={
+            <button
+              onClick={() => navigate("/")}
+              className="text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
+            >
+              Cancel
+            </button>
+          }
+        />
 
-        <div className="flex items-center gap-2 mt-2 mb-6">
-          <label htmlFor="workout-date" className="text-base text-neutral-500">
+        <div className="flex items-center gap-2 mb-6">
+          <label htmlFor="workout-date" className="text-base text-neutral-500 dark:text-neutral-400">
             Date
           </label>
           <input
@@ -203,7 +220,8 @@ export default function WorkoutScreen({ token }: WorkoutScreenProps) {
             type="date"
             value={workout.date}
             onChange={handleDateChange}
-            className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-base
+            className="rounded-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800
+                       text-neutral-900 dark:text-neutral-100 px-2 py-1 text-base
                        focus:outline-none focus:ring-2 focus:ring-neutral-400"
           />
         </div>
@@ -230,8 +248,9 @@ export default function WorkoutScreen({ token }: WorkoutScreenProps) {
         {import.meta.env.DEV && (
           <div>
             <button
-              className="mt-2 w-full rounded-md bg-neutral-300 text-neutral-800 py-2 text-lg font-semibold
-                         hover:bg-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-400"
+              className="mt-2 w-full rounded-md bg-neutral-300 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200
+                         py-2 text-lg font-semibold hover:bg-neutral-400 dark:hover:bg-neutral-600
+                         focus:outline-none focus:ring-2 focus:ring-neutral-400"
               onClick={handleRandomFill}
             >
               Random Fill
