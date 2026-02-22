@@ -26,19 +26,19 @@ export default function ExerciseCard({ exercise, onExerciseChange }: ExerciseCar
   const isSingleSet = exercise.sets.length <= 1;
 
   return (
-    <div className="flex rounded-2xl bg-white border border-neutral-200 overflow-hidden">
-      <div className="flex flex-col items-center justify-between bg-neutral-100 px-2 py-3 min-w-12">
+    <div className="flex rounded-2xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+      <div className="flex flex-col items-center justify-between bg-neutral-100 dark:bg-neutral-900 px-2 py-3 min-w-12">
         <span
-          className="text-lg font-semibold text-neutral-700 whitespace-nowrap"
+          className="text-lg font-semibold text-neutral-700 dark:text-neutral-100 whitespace-nowrap"
           style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
         >
           {exercise.name}
         </span>
-        <span className="text-xs text-neutral-400 mt-2">
+        <span className="text-xs text-neutral-400 dark:text-neutral-500 mt-2">
           {exercise.targetWeight} lb
         </span>
       </div>
-      <div className="flex-1 px-3 py-2 divide-y divide-neutral-100">
+      <div className="flex-1 px-3 py-2 divide-y divide-neutral-100 dark:divide-neutral-700">
         {exercise.sets.map((set, i) => (
           <SetRow
             key={i}
@@ -50,15 +50,15 @@ export default function ExerciseCard({ exercise, onExerciseChange }: ExerciseCar
           />
         ))}
         <div className="flex items-center gap-4 py-4">
-          <span className="w-8 text-lg text-neutral-400 shrink-0">
+          <span className="w-8 text-lg text-neutral-400 dark:text-neutral-500 shrink-0">
             S{exercise.sets.length + 1}
           </span>
           <button
             onClick={handleAddSet}
-            className="flex-1 rounded-md border border-dashed border-neutral-300 text-neutral-500
+            className="flex-1 rounded-md border border-dashed border-neutral-300 dark:border-neutral-600 text-neutral-500 dark:text-neutral-400
                        py-1.5 text-sm font-medium
-                       hover:border-neutral-400 hover:text-neutral-700
-                       focus:outline-none focus:ring-2 focus:ring-neutral-400"
+                       hover:border-neutral-400 hover:text-neutral-700 dark:hover:border-neutral-500 dark:hover:text-neutral-200
+                       focus:outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500"
           >
             + Add Set
           </button>
