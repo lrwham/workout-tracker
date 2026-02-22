@@ -19,9 +19,7 @@ def seed():
     db = SessionLocal()
 
     test_users = [
-        {"email": "lawton@test.com", "password": "testpass123"},
-        {"email": "alice@test.com", "password": "testpass123"},
-        {"email": "bob@test.com", "password": "testpass123"},
+        {"email": "lawton@example.com", "password": "testpass123"},
     ]
 
     try:
