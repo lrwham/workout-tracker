@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from auth import get_current_user, get_db, verify_password, create_access_token
 from models import (
     Exercise,
+    ReusableExercises,
     Workout,
     WorkoutSet,
     User,
@@ -18,6 +19,7 @@ from models import (
 )
 from schemas import (
     ChangePasswordRequest,
+    ReusableExerciseCreate,
     TemplateCreate,
     TemplateResponse,
     WorkoutSubmission,
@@ -171,3 +173,20 @@ async def change_password(
     db.commit()
 
     return {"detail": "Password updated successfully"}
+
+@app.post("/exercises", status_code=201)
+async def create_exercise_template(
+    exercise: ReusableExerciseCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    db_exercise = ReusableExercises(
+        user_id=current_user.id,
+        name=exercise.name,
+        target_weight=exercise.target_weight,
+        num_sets=exercise.num_sets,
+    )
+    db.add(db_exercise)
+    db.commit()
+    db.refresh(db_exercise)
+    return {"detail": "Exercise created successfully", "id": db_exercise.id}

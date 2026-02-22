@@ -7,6 +7,7 @@ import TemplateCreator from "./components/TemplateCreator";
 import WorkoutScreen from "./components/WorkoutScreen";
 import AccountScreen from "./components/AccountScreen";
 import { useTheme } from "./hooks/useTheme";
+import ExerciseTemplateCreator from "./components/ExerciseTemplateCreator";
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -79,6 +80,18 @@ function App() {
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="/exercises/new"
+          element={
+            <ExerciseTemplateCreator
+              token={token}
+              email={email}
+              onLogout={handleLogout}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+            />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

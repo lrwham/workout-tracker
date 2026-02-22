@@ -67,7 +67,7 @@ export default function HomeScreen({
     <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 font-sans">
       <div className="max-w-md mx-auto px-4 py-6">
         <TopBar
-          pageTitle="My Workouts"
+          pageTitle="Workout Tracker"
           email={email}
           theme={theme}
           onToggleTheme={onToggleTheme}
@@ -75,6 +75,7 @@ export default function HomeScreen({
         />
 
         <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Available Workouts</h2>
           {templates.map((template) => (
             <div
               key={template.id}
@@ -109,7 +110,20 @@ export default function HomeScreen({
                      hover:border-neutral-400 hover:text-neutral-700
                      focus:outline-none focus:ring-2 focus:ring-neutral-400"
         >
-          + Create New Template
+          + Create New Workout
+        </button>
+        <div className="flex flex-col gap-3">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Your Exercises</h2>
+          {import.meta.env.DEV && (<p className="bg-black text-white">A list of created exercises should appear here.</p>)}
+        </div>
+        <button
+          onClick={() => navigate("/exercises/new")}
+          className="mt-6 w-full rounded-md border-2 border-dashed border-neutral-300 dark:border-neutral-600
+                     text-neutral-500 dark:text-neutral-400 py-3 text-base font-medium
+                     hover:border-neutral-400 hover:text-neutral-700
+                     focus:outline-none focus:ring-2 focus:ring-neutral-400"
+        >
+          + Create New Exercise
         </button>
       </div>
     </div>

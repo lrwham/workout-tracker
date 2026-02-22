@@ -90,3 +90,17 @@ class WorkoutSet(Base):
     reps: Mapped[int | None] = mapped_column(Integer, default=None)
 
     exercise: Mapped["Exercise"] = relationship(back_populates="sets")
+
+class ReusableExercises(Base):
+    __tablename__ = "reusable_exercises"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    name: Mapped[str] = mapped_column(String)
+    target_weight: Mapped[float] = mapped_column(Float)
+    num_sets: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc)
+    )
+
+    user: Mapped["User"] = relationship()

@@ -55,3 +55,8 @@ class ChangePasswordRequest(BaseModel):
         if self.new_password != self.confirm_password:
             raise ValueError("New password and confirmation do not match")
         return self
+
+class ReusableExerciseCreate(BaseModel):
+    name: str
+    target_weight: float
+    num_sets: int
