@@ -1,3 +1,7 @@
+# Environment Variables
+
+Update `.env_sample` with your desired values and rename it to `.env`. Podman will read the environment variables from this file when building.
+
 # To Run
 From the project root run `podman-compose up --build`
 
