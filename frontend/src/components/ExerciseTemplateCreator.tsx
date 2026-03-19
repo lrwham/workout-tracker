@@ -2,7 +2,7 @@
 // Page at /exercises/new
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { Theme, TemplateExercise } from "../types";
+import type { Theme } from "../types";
 import TopBar from "./TopBar";
 
 type ExerciseTemplateCreatorProps = {
@@ -31,14 +31,6 @@ export default function ExerciseTemplateCreator({
             alert("Please fill in all fields.");
             return;
         }
-
-        const newExercise: TemplateExercise = {
-            id: Date.now(), // Temporary ID, real one will come from backend
-            name: exerciseName,
-            targetWeight: parseFloat(targetWeight),
-            numSets: parseInt(numSets),
-            position: 0, // Position will be set when added to a template
-        };
 
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/exercises`, {
